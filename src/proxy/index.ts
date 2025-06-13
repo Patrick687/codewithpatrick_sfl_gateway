@@ -16,6 +16,20 @@ export const authServiceProxy = createProxyMiddleware({
   // Let http-proxy-middleware handle the body automatically
 });
 
+// League service proxy configuration
+export const leagueServiceProxy = createProxyMiddleware({
+  target: config.leagueServiceUrl,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/$': '/leagues', // Rewrite exact root path to /leagues
+    '^/(.*)$': '/leagues/$1', // Rewrite sub-paths to /leagues/sub-path
+  },
+  timeout: 30000,
+  proxyTimeout: 30000,
+  secure: false,
+  followRedirects: true,
+});
+
 // Future service proxy configurations can be added here
 // Example:
 // export const gameServiceProxy = createProxyMiddleware({

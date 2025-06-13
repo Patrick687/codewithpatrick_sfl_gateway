@@ -5,7 +5,8 @@ import morgan from 'morgan';
 import config from './config';
 import routes from './routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
-import { authServiceProxy } from './proxy';
+import { authServiceProxy, leagueServiceProxy } from './proxy';
+import { verifyToken } from './middleware/auth';
 import { setupSwagger } from './config/swagger';
 
 const app = express();
@@ -36,18 +37,18 @@ app.use(cors({
 // Logging middleware
 app.use(morgan('combined'));
 
-// Direct auth routes (without /api prefix) - BEFORE body parsing
-// This ensures the proxy gets the raw body
+// Proxy routes (BEFORE body parsing) - This ensures the proxy gets the raw body
 app.use('/auth', authServiceProxy);
+app.use('/api/leagues', verifyToken, leagueServiceProxy);
 
-// Body parsing middleware
+// Body parsing middleware (for non-proxy routes)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Setup Swagger documentation
 setupSwagger(app);
 
-// API routes
+// API routes (non-proxy routes)
 app.use('/api', routes);
 
 /**

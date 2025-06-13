@@ -62,6 +62,7 @@ export const config = {
 
   // Service URLs
   authServiceUrl: requireString('AUTH_SERVICE_URL', 'http://localhost:3001'),
+  leagueServiceUrl: requireString('LEAGUE_SERVICE_URL', 'http://localhost:3002'),
 
   // JWT Configuration
   jwtSecret: requireString('JWT_SECRET'),

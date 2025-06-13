@@ -1,5 +1,4 @@
 import { Router } from 'express';
-// import { verifyToken, optionalAuth } from '../middleware/auth';
 
 const router = Router();
 
