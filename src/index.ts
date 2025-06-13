@@ -3,7 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import config from './config';
-import routes from './routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { authServiceProxy, leagueServiceProxy } from './proxy';
 import { verifyToken } from './middleware/auth';
@@ -39,7 +38,7 @@ app.use(morgan('combined'));
 
 // Proxy routes (BEFORE body parsing) - This ensures the proxy gets the raw body
 app.use('/auth', authServiceProxy);
-app.use('/api/leagues', verifyToken, leagueServiceProxy);
+app.use('/leagues', verifyToken, leagueServiceProxy);
 
 // Body parsing middleware (for non-proxy routes)
 app.use(express.json({ limit: '10mb' }));
@@ -48,8 +47,15 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Setup Swagger documentation
 setupSwagger(app);
 
-// API routes (non-proxy routes)
-app.use('/api', routes);
+// Health endpoint
+app.get('/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'sfl-gateway',
+    version: '1.0.0'
+  });
+});
 
 /**
  * @swagger
