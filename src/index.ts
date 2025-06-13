@@ -63,7 +63,7 @@ app.get('/health', (_req, res) => {
  *   get:
  *     summary: Auth service health check (proxied)
  *     description: Proxies health check request to the auth service
- *     tags: [Auth Service, Health]
+ *     tags: [Auth Service (Proxied)]
  *     responses:
  *       200:
  *         description: Auth service is healthy
@@ -82,67 +82,64 @@ app.get('/health', (_req, res) => {
  * /auth/register:
  *   post:
  *     summary: Register a new user (proxied to auth service)
- *     description: Creates a new user account with email and password
- *     tags: [Auth Service, Authentication]
+ *     description: Creates a new user account. This request is proxied to the auth service.
+ *     tags: [Auth Service (Proxied)]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/RegisterRequest'
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - confirmPassword
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *               confirmPassword:
+ *                 type: string
+ *                 minLength: 6
  *     responses:
  *       201:
  *         description: User registered successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthResponse'
  *       400:
- *         description: Invalid input data
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Invalid input
  *       409:
  *         description: User already exists
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 
 /**
  * @swagger
  * /auth/login:
  *   post:
- *     summary: User login (proxied to auth service)
- *     description: Authenticates a user with email and password
- *     tags: [Auth Service, Authentication]
+ *     summary: Login user (proxied to auth service)
+ *     description: Authenticates a user and returns a JWT token. This request is proxied to the auth service.
+ *     tags: [Auth Service (Proxied)]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/LoginRequest'
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Login successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthResponse'
- *       400:
- *         description: Invalid input data
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       401:
  *         description: Invalid credentials
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 
 /**
@@ -151,7 +148,7 @@ app.get('/health', (_req, res) => {
  *   get:
  *     summary: Initiate Google OAuth login (proxied to auth service)
  *     description: Redirects to Google OAuth consent screen
- *     tags: [Auth Service, OAuth]
+ *     tags: [Auth Service (Proxied)]
  *     responses:
  *       302:
  *         description: Redirect to Google OAuth
@@ -163,7 +160,7 @@ app.get('/health', (_req, res) => {
  *   get:
  *     summary: Google OAuth callback (proxied to auth service)
  *     description: Handles the callback from Google OAuth and returns a JWT token
- *     tags: [Auth Service, OAuth]
+ *     tags: [Auth Service (Proxied)]
  *     parameters:
  *       - in: query
  *         name: code
@@ -191,7 +188,7 @@ app.get('/health', (_req, res) => {
  *   post:
  *     summary: Change user password (proxied to auth service)
  *     description: Changes the password for an authenticated user
- *     tags: [Auth Service, Authentication]
+ *     tags: [Auth Service (Proxied)]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -231,7 +228,7 @@ app.get('/health', (_req, res) => {
  *   get:
  *     summary: Protected route example (proxied to auth service)
  *     description: A protected route that requires authentication
- *     tags: [Auth Service, Authentication]
+ *     tags: [Auth Service (Proxied)]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -277,14 +274,64 @@ app.get('/health', (_req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/HealthResponse'
  */
-app.get('/health', (_req, res) => {
-    res.status(200).json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        service: 'sfl-gateway',
-        version: '1.0.0'
-    });
-});
+
+/**
+ * @swagger
+ * /leagues:
+ *   get:
+ *     summary: Get user's leagues (proxied to league service)
+ *     description: Returns all leagues for the authenticated user. This request is proxied to the league service.
+ *     tags: [Leagues (Proxied)]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of user's leagues
+ *       401:
+ *         description: Unauthorized
+ *   post:
+ *     summary: Create a new league (proxied to league service)
+ *     description: Creates a new league. This request is proxied to the league service.
+ *     tags: [Leagues (Proxied)]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       201:
+ *         description: League created successfully
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /leagues/{id}:
+ *   get:
+ *     summary: Get league details (proxied to league service)
+ *     description: Returns details for a specific league. This request is proxied to the league service.
+ *     tags: [Leagues (Proxied)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: League details
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: League not found
+ */
 
 // Error handling middleware
 app.use(notFoundHandler);

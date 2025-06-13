@@ -138,6 +138,150 @@ const options: swaggerJsdoc.Options = {
                         },
                     },
                 },
+                // League service schemas (proxied)
+                League: {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'string',
+                            format: 'uuid',
+                            description: 'League unique identifier',
+                            example: '123e4567-e89b-12d3-a456-426614174000',
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'League name',
+                            example: 'Premier League 2024',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'League description',
+                            example: 'A competitive fantasy football league',
+                        },
+                        maxMembers: {
+                            type: 'integer',
+                            description: 'Maximum number of members allowed',
+                            example: 12,
+                        },
+                        currentMembers: {
+                            type: 'integer',
+                            description: 'Current number of members',
+                            example: 8,
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'League creation timestamp',
+                            example: '2024-01-15T10:30:00Z',
+                        },
+                        createdBy: {
+                            type: 'string',
+                            format: 'uuid',
+                            description: 'ID of the user who created the league',
+                            example: '456e7890-e89b-12d3-a456-426614174001',
+                        },
+                    },
+                },
+                CreateLeagueRequest: {
+                    type: 'object',
+                    required: ['name', 'maxMembers'],
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'League name',
+                            example: 'Premier League 2024',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'League description',
+                            example: 'A competitive fantasy football league',
+                        },
+                        maxMembers: {
+                            type: 'integer',
+                            minimum: 2,
+                            maximum: 20,
+                            description: 'Maximum number of members (2-20)',
+                            example: 12,
+                        },
+                    },
+                },
+                UpdateLeagueRequest: {
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'League name',
+                            example: 'Premier League 2024 Updated',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'League description',
+                            example: 'An updated competitive fantasy football league',
+                        },
+                        maxMembers: {
+                            type: 'integer',
+                            minimum: 2,
+                            maximum: 20,
+                            description: 'Maximum number of members (2-20)',
+                            example: 15,
+                        },
+                    },
+                },
+                LeagueWithMembers: {
+                    allOf: [
+                        { $ref: '#/components/schemas/League' },
+                        {
+                            type: 'object',
+                            properties: {
+                                members: {
+                                    type: 'array',
+                                    items: {
+                                        $ref: '#/components/schemas/LeagueMember',
+                                    },
+                                },
+                            },
+                        },
+                    ],
+                },
+                LeagueMember: {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'string',
+                            format: 'uuid',
+                            description: 'Member unique identifier',
+                            example: '789e0123-e89b-12d3-a456-426614174002',
+                        },
+                        userId: {
+                            type: 'string',
+                            format: 'uuid',
+                            description: 'User ID of the member',
+                            example: '456e7890-e89b-12d3-a456-426614174001',
+                        },
+                        username: {
+                            type: 'string',
+                            description: 'Username of the member',
+                            example: 'john_doe',
+                        },
+                        email: {
+                            type: 'string',
+                            format: 'email',
+                            description: 'Email of the member',
+                            example: 'john@example.com',
+                        },
+                        joinedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'When the user joined the league',
+                            example: '2024-01-20T14:30:00Z',
+                        },
+                        isOwner: {
+                            type: 'boolean',
+                            description: 'Whether this member is the league owner',
+                            example: false,
+                        },
+                    },
+                },
             },
         },
     },
