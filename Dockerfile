@@ -1,21 +1,36 @@
-# Use official Node.js LTS image
-FROM node:20
-
-# Set working directory
+# Base stage
+FROM node:20-alpine AS base
 WORKDIR /app
-
-# Copy package files and install dependencies
 COPY package*.json ./
+
+# Development stage
+FROM base AS development
+ENV NODE_ENV=docker
 RUN npm install
-
-# Copy the rest of the code
 COPY . .
+EXPOSE 3000
+EXPOSE 9230
+CMD ["npm", "run", "dev:docker"]
 
-# Build TypeScript
+# Production dependencies stage
+FROM base AS production-deps
+ENV NODE_ENV=production
+RUN npm ci --only=production && npm cache clean --force
+
+# Build stage
+FROM base AS build
+ENV NODE_ENV=production
+RUN npm ci
+COPY . .
 RUN npm run build
 
-# Expose the port (match your .env PORT)
+# Production stage
+FROM node:20-alpine AS production
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=production-deps /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY package*.json ./
 EXPOSE 3000
-
-# Start the app
+USER node
 CMD ["npm", "start"]
