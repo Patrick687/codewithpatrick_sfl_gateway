@@ -1,31 +1,30 @@
 import { Router } from 'express';
-import { authServiceProxy } from '../proxy';
 // import { verifyToken, optionalAuth } from '../middleware/auth';
 
 const router = Router();
 
-// Health check endpoint
+/**
+ * @swagger
+ * /api/health:
+ *   get:
+ *     summary: Health check endpoint for API routes
+ *     description: Returns the health status of the gateway API
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthResponse'
+ */
 router.get('/health', (_req, res) => {
-    res.status(200).json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        service: 'sfl-gateway'
-    });
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'sfl-gateway-api',
+  });
 });
-
-// Auth service routes - these will be proxied to the auth service
-// Public routes (no authentication required)
-router.use('/auth/health', authServiceProxy);
-router.use('/auth/register', authServiceProxy);
-router.use('/auth/login', authServiceProxy);
-router.use('/auth/google', authServiceProxy);
-router.use('/auth/google/callback', authServiceProxy);
-
-// Protected routes (authentication required)
-// Note: The auth verification is handled by the auth service itself
-// But we could add gateway-level auth verification here if needed
-router.use('/auth/change-password', authServiceProxy);
-router.use('/auth/protected', authServiceProxy);
 
 // Future service routes can be added here
 // Example:

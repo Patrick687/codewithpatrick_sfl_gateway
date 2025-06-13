@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import config from '../config';
 
 export const errorHandler = (
     error: Error,
@@ -25,7 +26,7 @@ export const errorHandler = (
 
     res.status(statusCode).json({
         error: message,
-        ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+        ...(config.nodeEnv === 'development' && { stack: error.stack }),
     });
 };
 
@@ -33,6 +34,6 @@ export const notFoundHandler = (req: Request, res: Response): void => {
     res.status(404).json({
         error: 'Route not found',
         path: req.path,
-        method: req.method
+        method: req.method,
     });
 };

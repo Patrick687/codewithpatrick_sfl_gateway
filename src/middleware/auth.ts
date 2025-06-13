@@ -19,24 +19,28 @@ export const verifyToken = (req: AuthenticatedRequest, res: Response, next: Next
     }
 
     try {
-        const decoded = jwt.verify(token, config.jwtSecret) as any;
+        const decoded = jwt.verify(token, config.jwtSecret) as { id: string;[key: string]: any; };
         req.user = decoded;
         next();
-    } catch (error) {
+    } catch {
         res.status(403).json({ error: 'Invalid or expired token' });
         return;
     }
 };
 
-export const optionalAuth = (req: AuthenticatedRequest, _res: Response, next: NextFunction): void => {
+export const optionalAuth = (
+    req: AuthenticatedRequest,
+    _res: Response,
+    next: NextFunction
+): void => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token) {
         try {
-            const decoded = jwt.verify(token, config.jwtSecret) as any;
+            const decoded = jwt.verify(token, config.jwtSecret) as { id: string;[key: string]: any; };
             req.user = decoded;
-        } catch (error) {
+        } catch {
             // Token is invalid, but we continue without setting user
         }
     }

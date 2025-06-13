@@ -3,17 +3,17 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 
 # Build output
 dist/
 build/
 
 # Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*
+!.env.example
+!.env.template
+!.env.template
 
 # Logs
 logs
@@ -27,9 +27,22 @@ pids
 
 # Coverage directory used by tools like istanbul
 coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# TypeScript cache
+*.tsbuildinfo
+.tscache/
+
+# ESLint cache
+.eslintcache
 
 # IDE
 .vscode/
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea/
 *.swp
 *.swo
@@ -37,4 +50,26 @@ coverage/
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Database files (if using SQLite for local dev)
+*.sqlite
+*.sqlite3
+*.db
+
+# API documentation cache
+.swagger-codegen-ignore
