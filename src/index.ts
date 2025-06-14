@@ -7,6 +7,7 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { authServiceProxy, leagueServiceProxy } from './proxy';
 import { verifyToken } from './middleware/auth';
 import { setupSwagger } from './config/swagger';
+import { createHealthResponse } from './types/api';
 
 const app = express();
 
@@ -49,12 +50,8 @@ setupSwagger(app);
 
 // Health endpoint
 app.get('/health', (_req, res) => {
-  res.status(200).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    service: 'sfl-gateway',
-    version: '1.0.0'
-  });
+  const healthResponse = createHealthResponse('sfl-gateway', '1.0.0');
+  res.status(200).json(healthResponse);
 });
 
 /**
